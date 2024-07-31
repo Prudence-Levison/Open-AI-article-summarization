@@ -1,13 +1,29 @@
 import { useEffect, useState } from "react"
 import { copy, linkIcon, loader, tick } from "../assets"
+import { useLazyGetSummaryQuery } from "../services/article"
+
 const Demo = () => {
   const [article, setArticle] =useState( {
     url:'',
     summary: '',
-  })
-  
+  });
+   
+  const [ getSummary, {error, isFetching} ] = useLazyGetSummaryQuery();
+
+
   const handleSubmit = async (e) =>{
-  alert('submitted')
+    e.preventDefault();
+  const { data } = await getSummary({articleUrl: article.url})
+
+  if (data?.summary){
+    const newArticle ={
+      ...article, summary: data.summary
+    } ;
+  
+  setArticle(newArticle);
+
+  console.log(newArticle);
+}
   }
   
   return (
@@ -22,20 +38,20 @@ const Demo = () => {
 
           <img src={linkIcon}
           alt="link_Icon" 
-          className="absolute left-2 my-2 my-3 w-5"/>
+          className="absolute left-0 my-2 ml-3 w-5"/>
 
           <input
           type="url"
           placeholder="Enter a url" 
           value={article.url}
-          onChange={(e) => setArticle({... article, url:e.target.value})}
+          onChange={(e) => setArticle({... article, url: e.target.value})}
           required
           className="url_input peer"/>
 
           <button
           type="submit"
           className="submit_btn peer-focused:border-gray-700 peer-focused:text-gray-700"
-      >  </button>
+      > enter </button>
         </form>
         {/* Browser History*/}
       </div>
